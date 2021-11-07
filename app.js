@@ -25,8 +25,8 @@ function parseArticle(parseUrl, callback) {
 		  const writeFile = `${__dirname}/${hash}.article`;
 		  console.log(writeFile);
 
-		  fs.writeFileSync(writeFile, JSON.stringify(article));
-		  callback($.html());
+		  fs.writeFile(writeFile, $.html(), () => {});
+		  callback($.html(), hash);
 
 		}).catch((err) => {
 		  console.log(err);
@@ -35,17 +35,48 @@ function parseArticle(parseUrl, callback) {
 
 
 const app = express();
+app.use(express.urlencoded());
 const port = 8989;
 
 app.get('/', (req, res) => {
 	console.log(req.query);
 	parseArticle(
 		'https://zacharydcarter.substack.com/p/what-the-virginia-election-means', 
-		(content) => {
-			res.send(content);
+		(content, hash) => {
+			res.redirect(`/articles/${hash}`);
 		}
 	);
 })
+
+app.post('/articles/new', (req, res) => {
+	console.log('req', req.body.url);
+
+	parseArticle(
+		req.body.url,
+		(content, hash) => {
+			res.redirect(`/articles/${hash}`);
+		}
+	);
+
+});
+
+app.get('/articles/submit', (req, res) => {
+	res.sendFile('submit.html', { root: __dirname });
+});
+
+app.get('/articles/:id', (req, res) => {
+	const path = `${__dirname}/${req.params.id}.article`;
+	// const fileContent = fs.readFileSync();
+	console.log('path', path);
+	fs.readFile(
+		path,
+		'utf8',
+		(_, fileContent) => {
+			res.send(fileContent);
+		}
+	);
+});
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
