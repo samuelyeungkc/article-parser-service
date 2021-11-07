@@ -1,27 +1,39 @@
+const crypto = require('crypto');
+const fs = require('fs');
+const { extract } = require('article-parser');
+const express = require('express');
+
+const cheerio = require('cheerio');
+
 function parseArticle(parseUrl, callback) {
-	const { extract } = require('article-parser');
 	extract(parseUrl).then((article) => {
 		//  console.log(article);
 		  const content = article.content;
 
-		  const crypto = require('crypto');
+		  if (!callback) {
+			  return;
+		  }
+
+		  if (!content) {
+			  callback('No content found');
+		  }
+
+		  const $ = cheerio.load(content);
+		  $('head').append(`<title>${article.title || ''}</title>`);
+
 		  const hash = crypto.createHash('md5').update(parseUrl).digest('hex');
 		  const writeFile = `${__dirname}/${hash}.article`;
 		  console.log(writeFile);
-		  const fs = require('fs');
-		  fs.writeFileSync(writeFile, JSON.stringify(article));
 
-		  if (callback && article.content) {
-			  callback(article.content);
-		  }
+		  fs.writeFileSync(writeFile, JSON.stringify(article));
+		  callback($.html());
+
 		}).catch((err) => {
 		  console.log(err);
 		});
+} // end function
 
-}
 
-
-const express = require('express');
 const app = express();
 const port = 8989;
 
