@@ -39,13 +39,7 @@ app.use(express.urlencoded());
 const port = 8989;
 
 app.get('/', (req, res) => {
-	console.log(req.query);
-	parseArticle(
-		'https://zacharydcarter.substack.com/p/what-the-virginia-election-means', 
-		(content, hash) => {
-			res.redirect(`/articles/${hash}`);
-		}
-	);
+	res.sendFile('submit.html', { root: __dirname });
 })
 
 app.post('/articles/new', (req, res) => {
