@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mozilla/readability": "^0.4.1",
     "article-parser": "^4.2.10",
     "cheerio": "^1.0.0-rc.10",
     "express": "^4.17.1",
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.14",
+    "scraperjs": "^1.2.0"
   }
 }
