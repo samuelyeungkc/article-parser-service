@@ -13,6 +13,7 @@
     "article-parser": "^4.2.10",
     "cheerio": "^1.0.0-rc.10",
     "express": "^4.17.1",
+    "jsdom": "^18.0.1",
     "nodemon": "^2.0.14",
     "scraperjs": "^1.2.0"
   }
