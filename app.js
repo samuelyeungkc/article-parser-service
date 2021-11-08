@@ -24,9 +24,11 @@ function mozillaParse(url, callback) {
 			let article = reader.parse();
 			const content = article.content;
 
+			const articleTitle = $('title').text() || article.title || '';
+
 			const cheerioInst = cheerio.load(content);
 			cheerioInst('head').append(`<meta charset="utf-8">`);
-			cheerioInst('head').append(`<title>${article.title || ''}</title>`);
+			cheerioInst('head').append(`<title>${articleTitle}</title>`);
 			const sanitizedHtml = cheerioInst.html();
 
 			const writeFile = `${__dirname}/articles/${hash}.article`;
