@@ -1,38 +1,42 @@
 const crypto = require('crypto');
 const fs = require('fs');
-const { extract } = require('article-parser');
 const express = require('express');
 
 const cheerio = require('cheerio');
 
-function parseArticle(parseUrl, callback) {
-	extract(parseUrl).then((article) => {
-		//  console.log(article);
-		  const content = article.content;
+const { Readability } = require('@mozilla/readability');
+const { JSDOM } = require('jsdom');
 
-		  if (!callback) {
-			  return;
-		  }
+const scraperjs = require('scraperjs');
 
-		  if (!content) {
-			  callback('No content found');
-		  }
+function mozillaParse(url, callback) {
+	scraperjs.StaticScraper.create('https://spectrum.ieee.org/snitch-riscv-processor-6x-faster')
+		.scrape(function($) {
 
-		  const $ = cheerio.load(content);
-		  $('head').append(`<title>${article.title || ''}</title>`);
+			const hash = crypto.createHash('md5').update(url).digest('hex');
 
-		  const hash = crypto.createHash('md5').update(parseUrl).digest('hex');
-		  const writeFile = `${__dirname}/${hash}.article`;
-		  console.log(writeFile);
+			const originalHTML = $.html();
 
-		  fs.writeFile(writeFile, $.html(), () => {});
-		  callback($.html(), hash);
+			const jsDom = new JSDOM(originalHTML);
+			const html = jsDom.window.document;
 
-		}).catch((err) => {
-		  console.log(err);
+			let reader = new Readability(html);
+			let article = reader.parse();
+			const content = article.content;
+
+			const cheerioInst = cheerio.load(content);
+			cheerioInst('head').append(`<meta charset="utf-8">`);
+			cheerioInst('head').append(`<title>${article.title || ''}</title>`);
+			const sanitizedHtml = cheerioInst.html();
+
+			const writeFile = `${__dirname}/articles/${hash}.article`;
+			fs.writeFileSync(writeFile, sanitizedHtml);
+
+			if (callback) {
+				callback(hash);
+			}
 		});
 } // end function
-
 
 const app = express();
 app.use(express.urlencoded());
@@ -43,15 +47,9 @@ app.get('/', (req, res) => {
 })
 
 app.post('/articles/new', (req, res) => {
-	console.log('req', req.body.url);
-
-	parseArticle(
-		req.body.url,
-		(content, hash) => {
-			res.redirect(`/articles/${hash}`);
-		}
-	);
-
+	mozillaParse(req.body.url, (hash) => {
+		res.redirect(`/articles/${hash}`);
+	});
 });
 
 app.get('/articles/submit', (req, res) => {
@@ -59,7 +57,7 @@ app.get('/articles/submit', (req, res) => {
 });
 
 app.get('/articles/:id', (req, res) => {
-	const path = `${__dirname}/${req.params.id}.article`;
+	const path = `${__dirname}/articles/${req.params.id}.article`;
 	// const fileContent = fs.readFileSync();
 	console.log('path', path);
 	fs.readFile(
