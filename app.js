@@ -10,7 +10,7 @@ const { JSDOM } = require('jsdom');
 const scraperjs = require('scraperjs');
 
 function mozillaParse(url, callback) {
-	scraperjs.StaticScraper.create('https://spectrum.ieee.org/snitch-riscv-processor-6x-faster')
+	scraperjs.StaticScraper.create(url)
 		.scrape(function($) {
 
 			const hash = crypto.createHash('md5').update(url).digest('hex');
