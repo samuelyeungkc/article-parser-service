@@ -9,6 +9,44 @@ const { JSDOM } = require('jsdom');
 
 const scraperjs = require('scraperjs');
 
+async function puppeteerParse(url, callback) {
+
+	const puppeteer = require('puppeteer');
+	const browser = await puppeteer.launch();
+	const page = await browser.newPage();
+
+	await page.goto(url);
+
+	const originalHTML = await page.evaluate(_ => {
+		return Promise.resolve(document.body.innerHTML);
+	});
+	const pageTitle = await page.title();
+	const hash = crypto.createHash('md5').update(url).digest('hex');
+
+	const jsDom = new JSDOM(originalHTML);
+	const html = jsDom.window.document;
+
+	let reader = new Readability(html);
+	let article = reader.parse();
+	const content = article.content;
+
+	const articleTitle = pageTitle;
+
+	const cheerioInst = cheerio.load(content);
+	cheerioInst('head').append(`<meta charset="utf-8">`);
+	cheerioInst('head').append(`<title>${articleTitle}</title>`);
+	const sanitizedHtml = cheerioInst.html();
+
+	const writeFile = `${__dirname}/articles/${hash}.article`;
+	fs.writeFileSync(writeFile, sanitizedHtml);
+
+	if (callback) {
+		callback(hash);
+	}
+	await browser.close();
+
+} // end function
+
 function mozillaParse(url, callback) {
 	scraperjs.StaticScraper.create(url)
 		.scrape(function($) {
@@ -47,6 +85,10 @@ const port = 8989;
 app.get('/', (req, res) => {
 	res.sendFile('submit.html', { root: __dirname });
 })
+
+app.post('/articles/ajax', (req, res) => {
+	puppeteerParse(req.body.url, async (hash) => {res.redirect(`/articles/${hash}`);});
+});
 
 app.post('/articles/new', (req, res) => {
 	mozillaParse(req.body.url, (hash) => {
