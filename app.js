@@ -35,6 +35,7 @@ async function puppeteerParse(url, callback) {
 	const cheerioInst = cheerio.load(content);
 	cheerioInst('head').append(`<meta charset="utf-8">`);
 	cheerioInst('head').append(`<title>${articleTitle}</title>`);
+	cheerioInst('body').append(`<h1>${articleTitle}</h1>`);
 	const sanitizedHtml = cheerioInst.html();
 
 	const writeFile = `${__dirname}/articles/${hash}.article`;
@@ -67,6 +68,7 @@ function mozillaParse(url, callback) {
 			const cheerioInst = cheerio.load(content);
 			cheerioInst('head').append(`<meta charset="utf-8">`);
 			cheerioInst('head').append(`<title>${articleTitle}</title>`);
+			cheerioInst('body').prepend(`<h1>${articleTitle}</h1>`);
 			const sanitizedHtml = cheerioInst.html();
 
 			const writeFile = `${__dirname}/articles/${hash}.article`;
