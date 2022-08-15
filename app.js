@@ -30,7 +30,7 @@ async function puppeteerParse(url, callback) {
 	let article = reader.parse();
 	const content = article.content;
 
-	const articleTitle = pageTitle;
+    const articleTitle = article.title || pageTitle || '';
 
 	const cheerioInst = cheerio.load(content);
 	cheerioInst('head').append(`<meta charset="utf-8">`);
@@ -63,7 +63,7 @@ function mozillaParse(url, callback) {
 			let article = reader.parse();
 			const content = article.content;
 
-			const articleTitle = $('title').text() || article.title || '';
+			const articleTitle = article.title || $('title').text() || '';
 
 			const cheerioInst = cheerio.load(content);
 			cheerioInst('head').append(`<meta charset="utf-8">`);
