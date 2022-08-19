@@ -91,13 +91,21 @@ app.get('/', (req, res) => {
 })
 
 app.post('/articles/ajax', (req, res) => {
-	puppeteerParse(req.body.url, async (hash) => {res.redirect(`/articles/${hash}`);});
+    try {
+        puppeteerParse(req.body.url, async (hash) => {res.redirect(`/articles/${hash}`);});
+    } catch(err) {
+        console.error(err);
+    }
 });
 
 app.post('/articles/new', (req, res) => {
-	mozillaParse(req.body.url, (hash) => {
-		res.redirect(`/articles/${hash}`);
-	});
+    try {
+        mozillaParse(req.body.url, (hash) => {
+            res.redirect(`/articles/${hash}`);
+        });
+    } catch(err) {
+        console.error(err);
+    }
 });
 
 app.get('/articles/submit', (req, res) => {
