@@ -25,5 +25,22 @@
 		    <input class="btn btn-primary" type="submit"/>
 	    </div>
         </form>
+
+	<div class="d-grid gap-2">
+		<button class="btn btn-secondary" onclick="pastetext();">
+			paste text
+		</button>
+	</div>
+
+        <script>
+		function pasteText() {
+			navigator.clipboard.readText()
+				.then(text => {
+					document.getElementById('standard-input').value = text;
+					document.getElementById('ajax-input').value = text;
+				});
+		}
+		pasteText();
+        </script>
     </body>
 </html>
