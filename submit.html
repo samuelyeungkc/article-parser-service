@@ -1,14 +1,29 @@
 <html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+		<title>Parse Article</title>
+	</head>
     <body>
         <form action="/articles/new" method="post">
 	    <h3> Standard </h3>
-            <input name="url"/>
-            <input type="submit"/>
+	    <div class="input-group flex-nowrap">
+		    <input id="standard-input" type="text" class="form-control" name="url" autofocus/>
+	    </div>
+	    <div class="d-grid gap-2">
+		    <input class="btn btn-primary" type="submit"/>
+	    </div>
         </form>
         <form action="/articles/ajax" method="post">
 	    <h3> Ajax pages </h3>
-            <input name="url"/>
-            <input type="submit"/>
+	    <div class="input-group flex-nowrap">
+		    <input id="ajax-input" type="text" class="form-control" name="url"/>
+	    </div>
+	    <div class="d-grid gap-2">
+		    <input class="btn btn-primary" type="submit"/>
+	    </div>
         </form>
     </body>
 </html>
