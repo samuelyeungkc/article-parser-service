@@ -27,18 +27,22 @@
         </form>
 
 	<div class="d-grid gap-2">
-		<button class="btn btn-secondary" onclick="pastetext();">
+		<button class="btn btn-secondary" onclick="pasteText();">
 			paste text
 		</button>
 	</div>
 
         <script>
 		function pasteText() {
-			navigator.clipboard.readText()
-				.then(text => {
-					document.getElementById('standard-input').value = text;
-					document.getElementById('ajax-input').value = text;
-				});
+			try {
+				navigator.clipboard.readText()
+					.then(text => {
+						document.getElementById('standard-input').value = text;
+						document.getElementById('ajax-input').value = text;
+					});
+			} catch (e) {
+				console.error('error trying to paste', e);
+			}
 		}
 		pasteText();
         </script>
