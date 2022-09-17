@@ -9,6 +9,12 @@ const { JSDOM } = require('jsdom');
 
 const scraperjs = require('scraperjs');
 
+
+const removeTables = (body) => {
+    Array.from(body.querySelectorAll('table'))
+        .forEach(table => table.parentElement.removeChild(table));
+};
+
 async function puppeteerParse(url, callback) {
 
 	const puppeteer = require('puppeteer');
@@ -25,6 +31,7 @@ async function puppeteerParse(url, callback) {
 
 	const jsDom = new JSDOM(originalHTML);
 	const html = jsDom.window.document;
+	removeTables(jsDom.window.document.body);
 
 	let reader = new Readability(html);
 	let article = reader.parse();
@@ -59,6 +66,7 @@ function mozillaParse(url, callback) {
 
 			const jsDom = new JSDOM(originalHTML);
 			const html = jsDom.window.document;
+			removeTables(jsDom.window.document.body);
 
 			let reader = new Readability(html);
 			let article = reader.parse();
