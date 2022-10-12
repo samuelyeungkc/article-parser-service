@@ -98,11 +98,14 @@ app.get('/', (req, res) => {
 	res.sendFile('submit.html', { root: __dirname });
 })
 
-app.post('/articles/ajax', (req, res) => {
+app.post('/articles/ajax', async (req, res) => {
     try {
-        puppeteerParse(req.body.url, async (hash) => {res.redirect(`/articles/${hash}`);});
-    } catch(err) {
+        await puppeteerParse(req.body.url, async (hash) => {
+            res.redirect(`/articles/${hash}`);
+        });
+    } catch (err) {
         console.error(err);
+        res.send('error');
     }
 });
 
