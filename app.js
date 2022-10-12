@@ -21,7 +21,7 @@ async function puppeteerParse(url, callback) {
 	const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 
-	await page.goto(url);
+	await page.goto(url, { waitUntil: "networkidle2" });
 
 	const originalHTML = await page.evaluate(_ => {
 		return Promise.resolve(document.body.innerHTML);
