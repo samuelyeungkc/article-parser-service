@@ -30,20 +30,24 @@ async function puppeteerParse(url, callback) {
 	await page.goto(url, { waitUntil: "networkidle2" });
 
 	const originalHTML = await page.evaluate(_ => {
-		return Promise.resolve(document.body.innerHTML);
+		return Promise.resolve(document.documentElement.outerHTML);
 	});
-	const pageTitle = await page.title();
+
+    const jsDom = new JSDOM(originalHTML);
+    const html = jsDom.window.document;
+
+    const reader = new Readability(html);
+    const article = reader.parse();
+    const content = article.content;
+
+    const pageTitle = await page.title();
 	const hash = crypto.createHash('md5').update(url).digest('hex');
 
-	const jsDom = new JSDOM(originalHTML);
-	const html = jsDom.window.document;
-	removeTables(jsDom.window.document.body);
-	const body = jsDom.window.document.body.querySelector('#readability-page-1');
+	const jsDomContent = new JSDOM(content);
+	// const html = jsDom.window.document;
+	removeTables(jsDomContent.window.document.body);
+	const body = jsDomContent.window.document.body.querySelector('#readability-page-1');
 	body.innerHTML = santizeElementTextContent(body);
-
-	let reader = new Readability(html);
-	let article = reader.parse();
-	const content = article.content;
 
     const articleTitle = article.title || pageTitle || '';
 
