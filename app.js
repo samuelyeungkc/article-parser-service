@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const express = require('express');
+const cors = require('cors');
 
 const cheerio = require('cheerio');
 
@@ -114,6 +115,7 @@ function mozillaParse(url) {
 } // end function
 
 const app = express();
+app.use(cors());
 app.use(express.urlencoded({limit: '50mb'}));
 app.use(express.json({limit: '50mb'}));
 const port = 8989;
