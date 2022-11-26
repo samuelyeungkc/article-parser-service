@@ -125,10 +125,10 @@ app.get('/', (req, res) => {
 })
 
 app.post('/articles/body', async (req, res) => {
-    const {url, body} = req.body;
     try {
+        const { url, body } = req.body;
         const hash = cacheArticle(url, body);
-        res.redirect(`/articles/${hash}`);
+        res.json({url: `/articles/${hash}`});
     } catch (err) {
         console.error(err);
     }
