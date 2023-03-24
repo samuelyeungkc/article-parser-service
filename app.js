@@ -130,8 +130,9 @@ app.post('/articles/body', async (req, res) => {
         const hash = cacheArticle(url, body);
         res.json({url: `/articles/${hash}`});
     } catch (err) {
-        console.error(err);
+        console.error('Unable to parse body', err);
     }
+    res.json({status: 'error'});
 });
 
 app.post('/articles/ajax', async (req, res) => {
@@ -140,9 +141,9 @@ app.post('/articles/ajax', async (req, res) => {
             res.redirect(`/articles/${hash}`);
         });
     } catch (err) {
-        console.error(err);
-        res.send('error');
+        console.error('Unable to do ajax', err);
     }
+    res.json({status: 'error'});
 });
 
 app.post('/articles/new', async (req, res) => {
@@ -150,8 +151,9 @@ app.post('/articles/new', async (req, res) => {
         const hash = await mozillaParse(req.body.url);
         res.redirect(`/articles/${hash}`);
     } catch (err) {
-        console.error(err);
+        console.error('Unable to parse new due to', err);
     }
+    res.json({status: 'error'});
 });
 
 app.get('/articles/submit', (req, res) => {
