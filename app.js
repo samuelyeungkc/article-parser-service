@@ -131,8 +131,8 @@ app.post('/articles/body', async (req, res) => {
         res.json({url: `/articles/${hash}`});
     } catch (err) {
         console.error('Unable to parse body', err);
+        res.json({status: 'error'});
     }
-    res.json({status: 'error'});
 });
 
 app.post('/articles/ajax', async (req, res) => {
@@ -142,8 +142,8 @@ app.post('/articles/ajax', async (req, res) => {
         });
     } catch (err) {
         console.error('Unable to do ajax', err);
+        res.json({status: 'error'});
     }
-    res.json({status: 'error'});
 });
 
 app.post('/articles/new', async (req, res) => {
@@ -152,8 +152,8 @@ app.post('/articles/new', async (req, res) => {
         res.redirect(`/articles/${hash}`);
     } catch (err) {
         console.error('Unable to parse new due to', err);
+        res.json({status: 'error'});
     }
-    res.json({status: 'error'});
 });
 
 app.get('/articles/submit', (req, res) => {
@@ -172,7 +172,6 @@ app.get('/articles/:id', (req, res) => {
 		}
 	);
 });
-
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
