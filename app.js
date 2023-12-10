@@ -22,53 +22,6 @@ const removeTables = (body) => {
         .forEach(table => table.parentElement.removeChild(table));
 };
 
-async function puppeteerParse(url, callback) {
-
-	const puppeteer = require('puppeteer');
-	const browser = await puppeteer.launch();
-	const page = await browser.newPage();
-
-	await page.goto(url, { waitUntil: "networkidle2" });
-
-	const originalHTML = await page.evaluate(_ => {
-		return Promise.resolve(document.documentElement.outerHTML);
-	});
-
-    const jsDom = new JSDOM(originalHTML);
-    const html = jsDom.window.document;
-
-    const reader = new Readability(html);
-    const article = reader.parse();
-    const content = article.content;
-
-    const pageTitle = await page.title();
-	const hash = crypto.createHash('md5').update(url).digest('hex');
-
-	const jsDomContent = new JSDOM(content);
-	// const html = jsDom.window.document;
-	removeTables(jsDomContent.window.document.body);
-	const body = jsDomContent.window.document.body.querySelector('#readability-page-1');
-	body.innerHTML = santizeElementTextContent(body);
-
-    const articleTitle = article.title || pageTitle || '';
-
-	const cheerioInst = cheerio.load(content);
-	cheerioInst('head').append(`<meta charset="utf-8">`);
-	cheerioInst('head').append(`<title>${articleTitle}</title>`);
-	cheerioInst('body').prepend(`<h1>${articleTitle}</h1>`);
-	cheerioInst('body').append(`<p><a href="${url}">source</a></p>`);
-	const sanitizedHtml = cheerioInst.html();
-
-	const writeFile = `${__dirname}/articles/${hash}.article`;
-	fs.writeFileSync(writeFile, sanitizedHtml);
-
-	if (callback) {
-		callback(hash);
-	}
-	await browser.close();
-
-} // end function
-
 const parseHtml = (url, originalHTML) => {
     const jsDom = new JSDOM(originalHTML);
     const html = jsDom.window.document;
@@ -131,17 +84,6 @@ app.post('/articles/body', async (req, res) => {
         res.json({url: `/articles/${hash}`});
     } catch (err) {
         console.error('Unable to parse body', err);
-        res.json({status: 'error'});
-    }
-});
-
-app.post('/articles/ajax', async (req, res) => {
-    try {
-        await puppeteerParse(req.body.url, async (hash) => {
-            res.redirect(`/articles/${hash}`);
-        });
-    } catch (err) {
-        console.error('Unable to do ajax', err);
         res.json({status: 'error'});
     }
 });
