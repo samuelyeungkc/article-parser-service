@@ -26,8 +26,8 @@ const removeElement = (body, querySelector) => {
 const parseHtml = (url, originalHTML) => {
   const jsDom = new JSDOM(originalHTML);
   const html = jsDom.window.document;
-  removeElement(jsDomContent.window.document.body, 'table');
-  removeElement(jsDomContent.window.document.body, 'figcaption');
+  removeElement(jsDom.window.document.body, 'table');
+  removeElement(jsDom.window.document.body, 'figcaption');
 
   let reader = new Readability(html);
   let article = reader.parse();
