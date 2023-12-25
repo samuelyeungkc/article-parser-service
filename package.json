@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "forever app.js",
     "pm2": "pm2 start ecosystem.config.js"
   },
   "author": "",
@@ -15,6 +16,7 @@
     "cheerio": "^1.0.0-rc.10",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "forever": "^4.0.3",
     "jsdom": "^18.0.1",
     "nodemon": "^2.0.14",
     "prettier": "^3.1.1",
